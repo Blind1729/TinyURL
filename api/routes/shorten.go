@@ -36,6 +36,10 @@ func ShortenURL(c *fiber.Ctx) error {
 
 	// Rate limiting
 	r2 := database.CreateClient(1)
+	err := r2.Ping(database.CTX).Err()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Unable to connect to redis"})
+	}
 	defer func(r2 *redis.Client) {
 		err := r2.Close()
 		if err != nil {

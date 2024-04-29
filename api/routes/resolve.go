@@ -11,6 +11,10 @@ import (
 func ResolveURL(c *fiber.Ctx) error {
 	url := c.Params("url")
 	r := database.CreateClient(0)
+	err := r.Ping(database.CTX).Err()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Unable to connect to redis"})
+	}
 	defer func(r *redis.Client) {
 		err := r.Close()
 		if err != nil {
