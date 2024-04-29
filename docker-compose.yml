@@ -1,14 +1,23 @@
-version: "3"
+# 1. Specify the version for docker-compose.yml
+version: "3.8"
+
+# 2. Generate the services needed (redis)
 services:
-  api:
-    build: .
-    ports:
-      - "3000:3000"
-    depends_on:
-      - redis
-    env_file:
-      - .env
   redis:
+    container_name: "tiny-url-redis"
     image: redis:alpine
     ports:
       - "6379:6379"
+    volumes:
+      - .data:/data
+
+  api:
+    container_name: "tiny-url-api"
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - redis
